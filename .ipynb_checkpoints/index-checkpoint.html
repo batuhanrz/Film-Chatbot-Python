@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CineBot</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&display=swap');
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --bg:       #08080e;
+  --bg2:      #0d0d18;
+  --bg3:      #111120;
+  --border:   #1c1c30;
+  --border2:  #252540;
+  --accent:   #c0392b;
+  --accent2:  #e74c3c;
+  --text:     #e8e8e0;
+  --text2:    #888890;
+  --text3:    #444455;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+/* ── Şerit ── */
+.strip {
+  height: 6px;
+  flex-shrink: 0;
+  background: repeating-linear-gradient(
+    90deg,
+    var(--accent) 0px, var(--accent) 18px,
+    #7b1a15 18px, #7b1a15 36px
+  );
+}
+
+/* ── Header ── */
+.header {
+  flex-shrink: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--border);
+  padding: 0 32px;
+  height: 56px;
+  display: flex;
+  align-items: center;
+}
+
+.logo { display: flex; align-items: center; gap: 14px; }
+
+.holes { display: flex; gap: 4px; }
+.hole {
+  width: 7px; height: 10px;
+  background: var(--accent);
+  border-radius: 2px;
+  opacity: 0.9;
+}
+
+.brand { line-height: 1; }
+.brand-name {
+  font-size: 17px; font-weight: 600;
+  color: var(--text); letter-spacing: 0.5px;
+}
+.brand-sub {
+  font-size: 9px; color: var(--accent);
+  letter-spacing: 2.5px; text-transform: uppercase;
+  margin-top: 2px; opacity: 0.8;
+}
+
+.header-right { margin-left: auto; display: flex; align-items: center; gap: 32px; }
+
+.stat { text-align: right; }
+.stat-n { font-size: 15px; font-weight: 600; color: var(--accent2); letter-spacing: -0.3px; }
+.stat-l { font-size: 9px; color: var(--text3); text-transform: uppercase; letter-spacing: 1.5px; margin-top: 1px; }
+
+.sep { width: 1px; height: 28px; background: var(--border); }
+
+/* ── Layout ── */
+.body { display: flex; flex: 1; overflow: hidden; }
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 196px;
+  flex-shrink: 0;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 20px 0 16px;
+  overflow-y: auto;
+}
+
+.sidebar::-webkit-scrollbar { display: none; }
+
+.s-label {
+  font-size: 9px; font-weight: 500;
+  color: var(--text3); text-transform: uppercase;
+  letter-spacing: 1.8px; padding: 0 16px;
+  margin-bottom: 8px;
+}
+
+.s-btn {
+  width: 100%;
+  background: none; border: none;
+  padding: 9px 16px;
+  display: flex; align-items: center; gap: 10px;
+  color: var(--text2); font-size: 12.5px;
+  cursor: pointer; text-align: left;
+  transition: background 0.12s, color 0.12s;
+  font-family: inherit;
+}
+.s-btn:hover { background: var(--bg3); color: var(--text); }
+
+.s-dot {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--text3);
+  flex-shrink: 0;
+  transition: background 0.12s;
+}
+.s-btn:hover .s-dot { background: var(--accent); }
+
+.s-divider { height: 1px; background: var(--border); margin: 14px 16px; }
+
+.s-bottom { margin-top: auto; padding: 0 12px; }
+
+.clear-btn {
+  width: 100%;
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--text3);
+  font-size: 12px; font-family: inherit;
+  padding: 8px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex; align-items: center; gap: 8px;
+  transition: border-color 0.12s, color 0.12s;
+}
+.clear-btn:hover { border-color: var(--accent); color: var(--accent); }
+
+/* ── Chat ── */
+.chat { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.msgs {
+  flex: 1; overflow-y: auto;
+  padding: 28px 32px;
+  display: flex; flex-direction: column; gap: 24px;
+}
+.msgs::-webkit-scrollbar { width: 3px; }
+.msgs::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 2px; }
+
+/* Hoşgeldin */
+.welcome {
+  margin: auto;
+  text-align: center;
+  padding: 40px 0;
+}
+.welcome-icon {
+  font-size: 40px; margin-bottom: 18px; opacity: 0.4;
+}
+.welcome-h { font-size: 18px; font-weight: 500; color: var(--text2); margin-bottom: 8px; }
+.welcome-p { font-size: 13px; color: var(--text3); line-height: 1.6; }
+
+/* Kullanıcı */
+.row-user { display: flex; justify-content: flex-end; }
+.bubble-user {
+  background: #1c0b08;
+  border: 1px solid #3a1510;
+  color: #ede8e0;
+  padding: 10px 16px;
+  border-radius: 14px 14px 3px 14px;
+  max-width: 58%;
+  line-height: 1.55;
+  font-size: 13.5px;
+}
+
+/* Bot */
+.row-bot { display: flex; flex-direction: column; gap: 10px; max-width: 72%; }
+
+.bot-tag {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 9px; font-weight: 500;
+  color: var(--accent); text-transform: uppercase; letter-spacing: 1.5px;
+}
+.bot-tag::before {
+  content: ''; width: 3px; height: 3px;
+  background: var(--accent); border-radius: 50%;
+}
+
+.bot-text {
+  color: #b0b0b8; font-size: 13.5px; line-height: 1.7;
+  white-space: pre-wrap;
+}
+.bot-text strong { color: var(--text); font-weight: 500; }
+
+/* Film kartları */
+.cards { display: flex; flex-direction: column; gap: 7px; margin-top: 2px; }
+
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 14px;
+  display: flex; align-items: center; gap: 14px;
+  transition: border-color 0.15s;
+  cursor: default;
+}
+.card:hover { border-color: var(--border2); }
+
+.card-icon {
+  width: 36px; height: 50px;
+  border-radius: 5px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  color: var(--text3);
+}
+
+.card-body { flex: 1; min-width: 0; }
+
+.card-title {
+  font-size: 13px; font-weight: 500; color: var(--text);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+
+.card-tags {
+  display: flex; align-items: center; gap: 6px;
+  margin-top: 5px; flex-wrap: wrap;
+}
+
+.tag {
+  font-size: 10px; color: var(--text3);
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  padding: 2px 7px; border-radius: 20px;
+  white-space: nowrap;
+}
+
+.tag-emotion {
+  color: #8888cc;
+  border-color: #22223a;
+  background: #0e0e1e;
+}
+
+.card-right { flex-shrink: 0; text-align: right; }
+
+.score {
+  font-size: 20px; font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.5px;
+  line-height: 1;
+}
+.score span { font-size: 11px; font-weight: 400; color: var(--text3); }
+
+.score-bar {
+  width: 44px; height: 3px;
+  background: var(--border);
+  border-radius: 2px;
+  margin-top: 5px;
+  overflow: hidden;
+}
+.score-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 2px;
+}
+
+.score-label {
+  font-size: 8px;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin-top: 4px;
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* Typing */
+.typing { display: flex; align-items: center; gap: 5px; padding: 6px 0; }
+.t-dot {
+  width: 5px; height: 5px;
+  background: var(--accent); border-radius: 50%;
+  animation: tdot 1.2s infinite;
+  opacity: 0.4;
+}
+.t-dot:nth-child(2) { animation-delay: 0.2s; }
+.t-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes tdot {
+  0%,80%,100% { transform: translateY(0); opacity: 0.3; }
+  40% { transform: translateY(-5px); opacity: 1; }
+}
+
+/* Input */
+.input-bar {
+  flex-shrink: 0;
+  padding: 14px 32px;
+  border-top: 1px solid var(--border);
+  background: var(--bg);
+  display: flex; gap: 10px; align-items: center;
+}
+
+.inp {
+  flex: 1;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  padding: 11px 20px;
+  color: var(--text);
+  font-size: 13.5px; font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+.inp::placeholder { color: var(--text3); }
+.inp:focus { border-color: var(--border2); }
+
+.send {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  background: var(--accent);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s, transform 0.1s;
+  color: #fff; font-size: 15px;
+}
+.send:hover { background: var(--accent2); }
+.send:active { transform: scale(0.93); }
+
+/* Hata */
+.err {
+  background: #140505;
+  border: 1px solid #3a1010;
+  color: #e08080;
+  padding: 10px 14px;
+  border-radius: 8px;
+  font-size: 12.5px;
+}
+</style>
+</head>
+<body>
+
+<div class="strip"></div>
+
+<header class="header">
+  <div class="logo">
+    <div class="holes">
+      <div class="hole"></div><div class="hole"></div><div class="hole"></div>
+    </div>
+    <div class="brand">
+      <div class="brand-name">CineBot</div>
+      <div class="brand-sub">AI Film Asistanı</div>
+    </div>
+  </div>
+  <div class="header-right">
+    <div class="stat">
+      <div class="stat-n">900K+</div>
+      <div class="stat-l">Film</div>
+    </div>
+    <div class="sep"></div>
+    <div class="stat">
+      <div class="stat-n" id="sChat">0</div>
+      <div class="stat-l">Sohbet</div>
+    </div>
+    <div class="sep"></div>
+    <div class="stat">
+      <div class="stat-n" id="sMovies">0</div>
+      <div class="stat-l">Öneri</div>
+    </div>
+  </div>
+</header>
+
+<div class="body">
+  <aside class="sidebar">
+    <div class="s-label">Kategoriler</div>
+    <button class="s-btn" onclick="ask('Komik aksiyon filmi öner')"><span class="s-dot"></span>Komik Aksiyon</button>
+    <button class="s-btn" onclick="ask('Ağlatıcı drama filmi öner')"><span class="s-dot"></span>Duygusal Drama</button>
+    <button class="s-btn" onclick="ask('Macera filmi öner')"><span class="s-dot"></span>Macera</button>
+    <button class="s-btn" onclick="ask('Romantik komedi öner')"><span class="s-dot"></span>Romantik Komedi</button>
+    <button class="s-btn" onclick="ask('Gerilim filmi öner')"><span class="s-dot"></span>Gerilim</button>
+    <button class="s-btn" onclick="ask('Korku filmi öner')"><span class="s-dot"></span>Korku</button>
+    <button class="s-btn" onclick="ask('Animasyon filmi öner')"><span class="s-dot"></span>Animasyon</button>
+    <button class="s-btn" onclick="ask('Aile ile izlenecek film öner')"><span class="s-dot"></span>Aile Filmi</button>
+    <button class="s-btn" onclick="ask('Dedektif filmi öner')"><span class="s-dot"></span>Dedektif</button>
+    <button class="s-btn" onclick="ask('Bilim kurgu filmi öner')"><span class="s-dot"></span>Bilim Kurgu</button>
+
+    <div class="s-divider"></div>
+
+    <div class="s-label">Ruh Haline Göre</div>
+    <button class="s-btn" onclick="ask('Neşelendiren mutlu bir film öner')"><span class="s-dot"></span>Neşeli</button>
+    <button class="s-btn" onclick="ask('Düşündüren derin bir film öner')"><span class="s-dot"></span>Düşündürücü</button>
+    <button class="s-btn" onclick="ask('Heyecanlı aksiyon dolu film öner')"><span class="s-dot"></span>Heyecanlı</button>
+
+    <div class="s-bottom">
+      <div class="s-divider" style="margin:0 0 12px;"></div>
+      <button class="clear-btn" onclick="clearChat()">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6M14 11v6"/></svg>
+        Sohbeti Temizle
+      </button>
+    </div>
+  </aside>
+
+  <div class="chat">
+    <div class="msgs" id="msgs">
+      <div class="welcome" id="welcome">
+        <div class="welcome-icon">◼</div>
+        <div class="welcome-h">Film önerisi almak için hazırım</div>
+        <div class="welcome-p">Tür, ruh hali ya da belirli bir tema yazabilirsiniz.<br>Soldaki kategorilerden de seçim yapabilirsiniz.</div>
+      </div>
+    </div>
+
+    <div class="input-bar">
+      <input class="inp" id="inp" placeholder="Ne izlemek istiyorsunuz?" onkeydown="if(event.key==='Enter')send()"/>
+      <button class="send" onclick="send()" title="Gönder">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+const ICONS = ['▶','◼','◈','◆','▪','◉','◎','●'];
+let history = [], chatN = 0, moviesSet = new Set();
+
+const $msgs  = document.getElementById('msgs');
+const $inp   = document.getElementById('inp');
+const $sChat = document.getElementById('sChat');
+const $sMov  = document.getElementById('sMovies');
+
+function esc(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+function icon(){ return ICONS[Math.floor(Math.random()*ICONS.length)]; }
+function scroll(){ $msgs.scrollTop = $msgs.scrollHeight; }
+function rmWelcome(){ const w=document.getElementById('welcome'); if(w)w.remove(); }
+
+function updateStats(){
+  $sChat.textContent = chatN;
+  $sMov.textContent  = moviesSet.size;
+}
+
+function addUser(text){
+  rmWelcome();
+  const d = document.createElement('div');
+  d.className = 'row-user';
+  d.innerHTML = `<div class="bubble-user">${esc(text)}</div>`;
+  $msgs.appendChild(d);
+  scroll();
+}
+
+function addTyping(){
+  const d = document.createElement('div');
+  d.id = 'typing'; d.className = 'row-bot';
+  d.innerHTML = `<div class="bot-tag">CineBot</div><div class="typing"><div class="t-dot"></div><div class="t-dot"></div><div class="t-dot"></div></div>`;
+  $msgs.appendChild(d); scroll();
+}
+
+function rmTyping(){ const t=document.getElementById('typing'); if(t)t.remove(); }
+
+function formatText(s){
+  return esc(s).replace(/\*\*(.*?)\*\*/g,'<strong>$1</strong>');
+}
+
+function genreClean(g){
+  return String(g||'').replace(/[\[\]']/g,'').trim();
+}
+
+function emotionLabel(e){
+  const map = {
+    joy:'Neşe', sadness:'Hüzün', anger:'Öfke', fear:'Korku',
+    anticipation:'Merak', optimism:'İyimserlik', trust:'Güven', surprise:'Sürpriz'
+  };
+  return map[String(e).toLowerCase()] || e;
+}
+
+function scoreBar(rating){
+  const pct = Math.min(100, Math.max(0, (rating/10)*100));
+  return `<div class="score-bar"><div class="score-fill" style="width:${pct}%"></div></div>`;
+}
+
+function addBot(answer, movies){
+  rmTyping();
+
+  let cardsHtml = '';
+  if(movies && movies.length){
+    const items = movies.map(m => {
+      moviesSet.add(m.title);
+      const genre   = genreClean(m.genre);
+      const emotion = m.emotion ? emotionLabel(m.emotion) : '';
+      const rating  = m.rating ? parseFloat(m.rating).toFixed(1) : null;
+      const ic      = icon();
+
+      const ratingHtml = rating
+        ? `<div class="score">${rating}<span>/10</span></div>
+           ${scoreBar(parseFloat(rating))}
+           <div class="score-label">kullanıcı ortalaması</div>`
+        : `<div class="score" style="color:var(--text3);font-size:13px">—</div>`;
+
+      const genreTag   = genre   ? `<span class="tag">${esc(genre.split(',')[0].trim())}</span>` : '';
+      const emotionTag = emotion ? `<span class="tag tag-emotion">${esc(emotion)}</span>` : '';
+
+      return `
+        <div class="card">
+          <div class="card-icon">${ic}</div>
+          <div class="card-body">
+            <div class="card-title">${esc(m.title)}</div>
+            <div class="card-tags">${genreTag}${emotionTag}</div>
+          </div>
+          <div class="card-right">${ratingHtml}</div>
+        </div>`;
+    }).join('');
+    cardsHtml = `<div class="cards">${items}</div>`;
+  }
+
+  const d = document.createElement('div');
+  d.className = 'row-bot';
+  d.innerHTML = `
+    <div class="bot-tag">CineBot</div>
+    <div class="bot-text">${formatText(answer)}</div>
+    ${cardsHtml}`;
+  $msgs.appendChild(d);
+  scroll(); updateStats();
+}
+
+function addErr(msg){
+  rmTyping();
+  const d = document.createElement('div');
+  d.innerHTML = `<div class="err">Hata: ${esc(msg)}</div>`;
+  $msgs.appendChild(d); scroll();
+}
+
+async function send(){
+  const q = $inp.value.trim();
+  if(!q) return;
+  $inp.value = ''; $inp.disabled = true;
+
+  addUser(q);
+  addTyping();
+  history.push({role:'user', content:q});
+
+  try {
+    const res = await fetch('/api/chat',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({question:q, history})
+    });
+    if(!res.ok) throw new Error('Sunucu hatası: '+res.status);
+    const data = await res.json();
+    history.push({role:'assistant', content:data.answer});
+    if(history.length > 14) history = history.slice(-14);
+    chatN++;
+    addBot(data.answer, data.movies||[]);
+  } catch(e){
+    addErr(e.message);
+  } finally {
+    $inp.disabled = false; $inp.focus();
+  }
+}
+
+function ask(q){ $inp.value = q; send(); }
+
+function clearChat(){
+  history=[]; chatN=0; moviesSet=new Set(); updateStats();
+  $msgs.innerHTML = `
+    <div class="welcome" id="welcome">
+      <div class="welcome-icon">◼</div>
+      <div class="welcome-h">Film önerisi almak için hazırım</div>
+      <div class="welcome-p">Tür, ruh hali ya da belirli bir tema yazabilirsiniz.<br>Soldaki kategorilerden de seçim yapabilirsiniz.</div>
+    </div>`;
+}
+
+$inp.focus();
+</script>
+</body>
+</html>
