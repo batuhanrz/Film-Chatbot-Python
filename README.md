@@ -1,280 +1,120 @@
-**AI Film Öneri Sistemi - RAG Tabanlı ChatbotProje Hakkında**
+# 🎬 CineBot — AI Destekli Film Öneri Chatbotu
 
-web site link:https://film-chatbot-j5s9ya38ry5fbbnjukw97v.streamlit.app/
+CineBot, Retrieval-Augmented Generation (RAG) mimarisi kullanarak kullanıcıların doğal dilde ifade ettiği tercihlerine göre kişiselleştirilmiş film önerileri sunan yapay zeka destekli bir chatbot uygulamasıdır.
 
-Bu proje, Retrieval-Augmented Generation (RAG) teknolojisi kullanarak kullanıcıların film tercihlerine göre kişiselleştirilmiş öneriler sunan yapay zeka destekli bir chatbot uygulamasıdır. Sistem, 900,000'den fazla film verisi üzerinde çalışarak doğal dil işleme ve semantik arama teknikleriyle en uygun filmleri önermektedir.Projenin AmacıBu projenin temel amaçları şunlardır:
+---
 
-Kullanıcıların doğal dilde belirttikleri tercihlerine göre yüksek kaliteli film önerileri sunmak
+## 🚀 Özellikler
 
-Tür, duygu durumu ve rating bilgilerine dayalı akıllı filtreleme ve sıralama yapmak
+- 🔍 **Semantik Arama** — FAISS vektör veritabanı ile 900.000+ film içinde anlamlı arama
+- 🤖 **RAG Mimarisi** — LangChain + OpenAI GPT-4o-mini ile bağlama duyarlı yanıtlar
+- 💬 **Konuşma Geçmişi** — Önceki mesajları hatırlayan çok turlu diyalog desteği
+- 🎭 **Duygu & Tür Filtreleme** — Film türü, duygu tonu ve temaya göre öneri
+- ⭐ **IMDb Rating** — CSV'den hesaplanan ortalama kullanıcı puanları
+- 🖥️ **Modern Arayüz** — Özel tasarımlı sinema temalı web UI (FastAPI + HTML)
 
-Konuşma bağlamını koruyarak interaktif ve tutarlı bir kullanıcı deneyimi sağlamak
+---
 
-Modern RAG mimarisi ile yüksek ilgililik skoruna sahip ve çeşitli sonuçlar üretmek
+## 📁 Proje Yapısı
 
-Vektör veritabanı ve dil modeli teknolojilerinin entegrasyonunu göstermek
-
-
-
-**Proje Yapısı ve Dosya OrganizasyonuFilm-Oneri-RAG-Chatbot/**
-
+```
+Film-Chatbot-Python/
 │
+├── main.py                    # FastAPI backend — RAG sorgu motoru
+├── index.html                 # Frontend — Sinema temalı chat arayüzü
+├── rebuild_faiss.py           # FAISS vektör veritabanını yeniden oluşturur
+├── filmkod.ipynb              # Geliştirme notebook'u
+├── film.csv                   # Ham veri seti (900K+ film kaydı)
+├── langchain_faiss_db/        # FAISS vektör veritabanı
+│   ├── index.faiss
+│   └── index.pkl
+├── movie_embeddings_full.pkl  # Önceden hesaplanmış embedding'ler
+├── requirements.txt           # Python bağımlılıkları
+└── sunum/                     # Proje sunum dosyaları
+```
 
-├── filmkod.ipynb                  # Ana geliştirme notebook'u
+---
 
-│   ├── Cell 1: Kütüphane import ve API key kontrolü
+## 🛠️ Kullanılan Teknolojiler
 
-│   ├── Cell 2: Embedding'lerin yüklenmesi
+| Katman | Teknoloji |
+|---|---|
+| Backend | FastAPI, Python 3.11 |
+| LLM | OpenAI GPT-4o-mini |
+| Embedding | OpenAI text-embedding-3-small (1536 dim) |
+| Vektör DB | FAISS (IndexFlatL2) |
+| RAG Framework | LangChain (MMR retrieval) |
+| Frontend | Vanilla HTML/CSS/JS |
 
-│   ├── Cell 3: LangChainMovieRAG class tanımı
+---
 
-│   ├── Cell 4: RAG sistemi başlatma
+## ⚙️ Kurulum
 
-│   ├── Cell 5: Chatbot fonksiyonu
+### 1. Repoyu klonla
 
-│   └── Cell 6: İnteraktif test interface
+```bash
+git clone https://github.com/batuhanrz/Film-Chatbot-Python.git
+cd Film-Chatbot-Python
+```
 
-│
+### 2. Sanal ortam oluştur ve bağımlılıkları yükle
 
-├── app.py                         # Streamlit web uygulaması
+```bash
+python -m venv venv
+venv\Scripts\activate        # Windows
+pip install -r requirements.txt
+```
 
-│   ├── LangChainMovieRAG class
+### 3. `.env` dosyasını oluştur
 
-│   ├── initialize\_rag() fonksiyonu
+```
+OPENAI_API_KEY=sk-...
+```
 
-│   ├── Streamlit UI components
+### 4. Uygulamayı başlat
 
-│   └── Session state yönetimi
+```bash
+uvicorn main:app --reload
+```
 
-│
+Tarayıcıda `http://localhost:8000` adresini aç.
 
-├── film.csv                       # Ham veri seti (900K+ kayıt)
+---
 
-│   ├── Columns: movie\_name, genres, Reviews, Ratings, emotion, Description
+## 🧠 Nasıl Çalışır?
 
-│   └── Size: ~2.5 GB
+1. Kullanıcı doğal dilde bir film tercihi yazar ("Hüzünlü ama güzel bir film istiyorum")
+2. Soru, OpenAI embedding modeli ile vektöre dönüştürülür
+3. FAISS, MMR algoritmasıyla en alakalı ve çeşitli 10 filmi bulur
+4. GPT-4o-mini, bulunan filmler ve konuşma geçmişini kullanarak Türkçe öneri üretir
+5. Film kartları, tür, duygu ve IMDb puanı ile birlikte gösterilir
 
-│
+---
 
-├── movie\_embeddings\_full.pkl      # Önceden hesaplanmış embeddings
+## 📊 Veri Seti
 
-│   ├── Structure: {'df': DataFrame with 'embedding' column}
+- **Kaynak:** IMDb film veritabanı
+- **Boyut:** 900.000+ kayıt
+- **Özellikler:** `movie_name`, `genres`, `Reviews`, `Ratings`, `emotion`, `Description`
+- **Embedding süresi:** ~2-3 saat (OpenAI API ile)
 
-│   ├── Size: ~5.2 GB
+---
 
-│   └── Creation time: ~2-3 saat
+## 🗂️ Retrieval Stratejisi
 
-│
+**MMR (Maximum Marginal Relevance)** algoritması iki kriteri dengeler:
+- **Relevance** — Sorguyla semantik benzerlik
+- **Diversity** — Önerilen filmler arasında çeşitlilik
 
-├── langchain\_faiss\_db/            # FAISS vektör veritabanı
+```python
+retriever = vectorstore.as_retriever(
+    search_type="mmr",
+    search_kwargs={"k": 10, "fetch_k": 30, "lambda_mult": 0.5}
+)
+```
 
-│   ├── index.faiss               # Binary FAISS index
+---
 
-│   ├── index.pkl                 # Index metadata
+## 📝 Lisans
 
-│   └── docstore.pkl              # Document store
-
-│
-
-├── .env                          # Çevre değişkenleri (gitignore'da)
-
-│   └── OPENAI\_API\_KEY=sk-...
-
-│
-
-├── requirements.txt              # Python bağımlılıkları
-
-└── README.md                     # Proje dokümantasyonu
-
-
-
-**Veri Seti**
-
-**Veri Kaynağı ve Boyut**
-
-Projede kullanılan veri seti IMDb film veritabanından derlenmiş olup, 900,000'den fazla film kaydı içermektedir. Veri CSV formatında saklanmakta ve her kayıt çoklu özellikler barındırmaktadır.
-
-**Veri Seti Özellikleri**
-
-ÖzellikAçıklamaVeri Tipimovie\_nameFilmin orijinal başlığıStringgenresFilm türleri (Action, Comedy, Drama, Thriller vb.)List\[String]ReviewsKullanıcı yorumları ve eleştiri metinleriTextRatings1-10 arası puanlamaFloatemotionFilmin genel duygu tonu (joy, sadness, anger, fear, anticipation, optimism)StringDescriptionFilm özeti ve kısa açıklamaText
-
-Veri Ön İşleme Pipeline
-
-
-
-**Veri Temizleme**
-
-
-
-Eksik değerlerin (null/NaN) ortalama veya medyan değerlerle doldurulması
-
-Duplicate kayıtların tespit edilip kaldırılması
-
-Encoding hatalarının düzeltilmesi
-
-
-
-
-
-**Metin Birleştirme**
-
-
-
-Tüm film özellikleri (başlık, tür, duygu, rating, yorum) tek bir metin alanında birleştirildi
-
-Her kayıt için text\_for\_embedding alanı oluşturuldu
-
-Metin formatı standardize edildi
-
-
-
-
-
-**Embedding Üretimi**
-
-
-
-OpenAI text-embedding-3-small modeli kullanıldı
-
-Her film için 1536 boyutlu vektör temsili üretildi
-
-Toplam embedding süresi: yaklaşık 2-3 saat (900K kayıt için)
-
-
-
-
-
-**Vektör İndeksleme**
-
-
-
-FAISS kütüphanesi ile verimli similarity search için indeksleme yapıldı
-
-IndexFlatL2 (L2 mesafe metriği) kullanıldı
-
-İndeks ve embedding'ler pickle formatında kaydedildi
-
-
-
-Kullanılan Teknolojiler ve Yöntemler
-
-Teknik Altyapı ve Mimari
-
-1\. Embedding Modeli
-
-Model: OpenAI text-embedding-3-small
-
-Teknik Özellikler:
-
-
-
-Boyut: 1536 dimension
-
-Maksimum token: 8191 token
-
-Maliyet: $0.00002 per 1K token
-
-Performans: state-of-the-art semantik benzerlik performansı
-
-
-
-Kullanım Amacı:
-
-Film metinlerini yüksek boyutlu vektör uzayında temsil ederek semantik benzerlik hesaplamaları yapmak. Bu sayede kullanıcı sorgusu ile filmler arasında anlam bazlı eşleştirme gerçekleştirilmektedir.
-
-2\. Vektör Veritabanı - FAISS
-
-Teknoloji: Facebook AI Similarity Search (FAISS)
-
-Seçilen İndeks Yapısı:
-
-
-
-IndexFlatL2: Brute-force L2 mesafe hesaplama
-
-Arama karmaşıklığı: O(n)
-
-Doğruluk: %100 (approximate değil, exact search)
-
-
-
-Performans Özellikleri:
-
-
-
-900K vektör üzerinde arama süresi: ~0.3-0.5 saniye
-
-Bellek kullanımı: ~5.5 GB (900K × 1536 × 4 byte)
-
-İndeks yükleme süresi: ~3-5 saniye
-
-
-
-Alternatif İndeks Tipleri ile Karşılaştırma:
-
-
-
-IndexIVFFlat: Daha hızlı ama %95 doğruluk
-
-IndexHNSW: Çok hızlı ama daha fazla bellek
-
-
-
-Projede doğruluk öncelikli olduğu için IndexFlatL2 tercih edilmiştir.
-
-3\. Large Language Model (LLM)
-
-Model: GPT-4o-mini
-
-Konfigürasyon Parametreleri:
-
-
-
-Temperature: 0.7 (dengeli yaratıcılık-tutarlılık)
-
-Max tokens: 1000
-
-Top-p: 0.9
-
-
-
-Model Seçim Gerekçesi:
-
-
-
-GPT-4o-mini, GPT-4'ün hafif versiyonu olup maliyet-performans dengesinde üstün
-
-Türkçe dil desteği mükemmel
-
-Bağlamsal anlama kapasitesi yüksek
-
-API response time: 1-2 saniye
-
-
-
-4\. RAG Framework - LangChain
-
-Framework Bileşenleri:
-
-a) ConversationalRetrievalChain:
-
-
-
-Retriever ve LLM'i entegre eder
-
-Sohbet geçmişini yönetir
-
-Prompt engineering için template desteği
-
-
-
-b) Retrieval Stratejisi - MMR (Maximum Marginal Relevance):
-
-MMR algoritması iki kriteri optimize eder:
-
-
-
-Relevance: Sorguyla en yüksek benzerlik
-
-Diversity: Seçilen dokümanlar arası minimum benzerlik
-
+Bu proje eğitim amaçlı geliştirilmiştir.
